@@ -7,6 +7,10 @@ testFolder = fullfile(outputFolder, 'test');
 categories = {'boxing','handclapping','handwaving','jogging','running','walking'};
 imds = imageDatastore(fullfile(trainFolder, categories), 'LabelSource', 'foldernames');
 
+tbl = countEachLabel(imds)
+
+minSetCount = min(tbl{:,2});
+
 imds = splitEachLabel(imds, minSetCount, 'randomize');
  
 [trainingSet, validationSet] = splitEachLabel(imds, 0.3, 'randomize');
