@@ -1,9 +1,11 @@
-function trainBOW(path)
+function trainBOW(path, actions)
 
 trainFolder = fullfile(path, 'train');
 testFolder = fullfile(path, 'test');
 
-categories = {'boxing','handclapping','handwaving','jogging','running','walking'};
+categories = struct2cell(actions)
+categories = categories(1,:)
+
 imds = imageDatastore(fullfile(trainFolder, categories), 'LabelSource', 'foldernames');
 
 tbl = countEachLabel(imds)

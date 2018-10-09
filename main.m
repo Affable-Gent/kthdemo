@@ -30,43 +30,48 @@ end
 mkdir(pathname,'jpg');
 
 % Get a list of all files and folders in this folder.
-classifiers = dir(fullfile(pathname,pathSuffix));
+actions = dir(fullfile(pathname,pathSuffix));
 % Get a logical vector that tells which is a directory.
-dirFlags = [classifiers.isdir];
+dirFlags = [actions.isdir];
 % Extract only those that are directories.
-classifiers = classifiers(dirFlags);
+actions = actions(dirFlags);
 % Remove Parent and Current Directories
-classifiers(ismember( {classifiers.name}, {'.', '..'})) = [];
+actions(ismember( {actions.name}, {'.', '..'})) = [];
 clear dirFlags
 
 for i=1:length(datasets)
     mkdir(jpgPath,string(datasets(i)));
     setPath = fullfile(jpgPath,string(datasets(i)));
-    for j=1:length(classifiers)
-        mkdir(setPath,classifiers(j).name);
+    for j=1:length(actions)
+        mkdir(setPath,actions(j).name);
     end
 end
 
 %% Generate Training and Test set
 wildcard = strcat('*',fileExt);
 clear allFiles
-for j=1:length(classifiers)
-    currentClass = dir(fullfile(pathname,pathSuffix,classifiers(j).name, wildcard));
-    for i=1:length(currentClass)
-        if rand > trainSetSize
-            class = string(datasets(1));
-        else
-            class = string(datasets(2));
+if exist('allFiles.mat', 'file');
+    load allFiles
+else
+    for j=1:length(actions)
+        currentClass = dir(fullfile(pathname,pathSuffix,actions(j).name, wildcard));
+        for i=1:length(currentClass)
+            if rand > trainSetSize
+                class = string(datasets(1));
+            else
+                class = string(datasets(2));
+            end
+            currentClass(i).set = class;
+            currentClass(i).action = actions(j).name;
         end
-        currentClass(i).set = class;
-        currentClass(i).action = classifiers(j).name;
-    end
         
-    if ~exist('allFiles','var')
-        allFiles = currentClass;
-    else
-        allFiles = [allFiles; currentClass];
+        if ~exist('allFiles','var')
+            allFiles = currentClass;
+        else
+            allFiles = [allFiles; currentClass];
+        end
     end
+    save allFiles allFiles
 end
 
 %% Extract Video to Jpg
@@ -83,7 +88,7 @@ if exists && ~skipCheck
     end
 end
 if ~exists
-    trainBOW(jpgPath);
+    trainBOW(jpgPath, actions);
 end
 
 %%

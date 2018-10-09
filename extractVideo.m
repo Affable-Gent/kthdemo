@@ -16,9 +16,13 @@ function extractVideo(pathName, action, datasetType, filePath, fileName, score)
         mov(k).cdata = imresize(mov(k).cdata,[256,256]);
         if personDetector(mov(k).cdata, score)
             imageName = strcat(fileName,'_',num2str(k),'.jpg');
-            imagePath = fullfile(pathName,datasetType,action,imageName);
-            disp(imagePath)
-            imwrite(mov(k).cdata,char(imagePath));
+            imageFullFile = fullfile(pathName,datasetType,action,imageName);
+            disp(imageFullFile)
+            if ~exist(imageFullFile, 'file');
+            imwrite(mov(k).cdata,char(imageFullFile));
+            else
+                disp('Skipping, file already exists')
+            end
         end
     end
 end
