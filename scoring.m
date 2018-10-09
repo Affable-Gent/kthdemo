@@ -1,6 +1,6 @@
 load kthClassifier
 
-aa = dir('/Users/LL/Downloads/kth/jpg/training/handclapping/person11_handclapping_d1*')
+aa = dir('C:/kth/jpg/train/boxing/person22_boxing_d1*');
 
 res =  strings(1,length(aa));
 for i = 1:length(aa)

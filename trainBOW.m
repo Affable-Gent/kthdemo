@@ -1,8 +1,7 @@
+function trainBOW(path)
 
-outputFolder = fullfile('/Users/LL/Downloads/kth/', 'jpg'); 
-
-trainFolder = fullfile(outputFolder, 'training');
-testFolder = fullfile(outputFolder, 'test');
+trainFolder = fullfile(path, 'train');
+testFolder = fullfile(path, 'test');
 
 categories = {'boxing','handclapping','handwaving','jogging','running','walking'};
 imds = imageDatastore(fullfile(trainFolder, categories), 'LabelSource', 'foldernames');
