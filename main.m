@@ -1,3 +1,5 @@
+
+
 %% Dataset
 % The KTH dataset is available at:
 % http://www.nada.kth.se/cvap/actions/
@@ -26,10 +28,15 @@ validationSetSize = 0.3; % total of 1
 origin = pwd;
 pathToMacScript = fullfile(pwd,'modernize.sh');
 fileExt = '.avi';
-pathSuffix='avi/';
-pathname = fullfile(pathname,dataset,'/');
+pathSuffix='avi\';
+pathname = fullfile(pathname,dataset,'\');
 jpgPath = fullfile(pathname,'jpg');
 datasets={'test' 'train'};
+
+%% Setup Parallel Computation
+% Uses default 'local' profile available in parallel compute preferences
+poolObj = gcp;
+addAttachedFiles( poolObj, {'extractVideo.m'})
 
 %% Get list of actions
 % Get a list of all files and folders in this folder.
@@ -75,7 +82,7 @@ if ~exists
     
     %% Generate Training and Test set
     wildcard = strcat('*',fileExt);
-    clear allFiles
+    clear allFiles;
     if exist('allFiles.mat', 'file');
         load allFiles
     else
@@ -101,7 +108,7 @@ if ~exists
     end
     
     %% Extract Video to Jpg
-    for i=1:length(allFiles)
+    parfor i=1:length(allFiles)
         extractVideo(jpgPath, allFiles(i).action, allFiles(i).set, allFiles(i).folder, allFiles(i).name, peopleDetectorScore);
     end
 else
@@ -135,5 +142,12 @@ if exists && ~skipCheck
     end
 end
 if ~exists
-    scoring(allFiles, datasets(1), jpgPath, categoryClassifier)
+    predictor(allFiles, datasets(1), jpgPath, categoryClassifier)
 end
+
+%% Evaluate dataset
+load kthClassifiedFiles
+evaluator(classifiedFiles, actions)
+
+%% Close parallel computing cluster
+delete(poolObj)

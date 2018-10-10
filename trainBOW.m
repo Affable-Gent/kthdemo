@@ -4,23 +4,23 @@ function trainBOW(path, actions, validationSetSize, set)
 % validationSetSize = 0.3
 % set = 'train'
 
-trainFolder = fullfile(path, set);
+datasetFolder = fullfile(path, set);
 
 % Pull the categories from the actions computed by folders
 categories = struct2cell(actions);
 categories = categories(1,:);
 
-imds = imageDatastore(fullfile(trainFolder, categories), 'LabelSource', 'foldernames');
+imds = imageDatastore(fullfile(datasetFolder, categories), 'LabelSource', 'foldernames');
 
-tbl = countEachLabel(imds);
-disp(tbl)
+% tbl = countEachLabel(imds);
+% disp(tbl)
 % determine the smallest amount of images in a category
 minSetCount = min(tbl{:,2}); 
 
 % Use splitEachLabel method to trim the set so that there are an equal number of images per category.
 imds = splitEachLabel(imds, minSetCount, 'randomize'); 
  
-disp(countEachLabel(imds))
+disp(countEachLabel(imds));
 
 % Randomly split the datatstore into training and validation sets
 [trainingSet, validationSet] = splitEachLabel(imds, validationSetSize, 'randomize');
@@ -38,7 +38,7 @@ disp(countEachLabel(imds))
 % imshow(readimage(trainingSet,walking))
 
 % Computes a bag of features using SURF and then reduces these features using k-means clustering 
-bag = bagOfFeatures(trainingSet);
+bag = bagOfFeatures(trainingSet, 'UseParallel', true);
 % Save bag of features to the current directory
 save bof bag
 
@@ -53,8 +53,9 @@ save bof bag
 % xlabel('Visual word index')
 % ylabel('Frequency of occurrence')
 
-% This is the training process that creates a classifier from the 
-categoryClassifier = trainImageCategoryClassifier(trainingSet, bag);
+% This is the training process that creates a classifier from the training
+% set and features
+categoryClassifier = trainImageCategoryClassifier(trainingSet, bag, 'UseParallel', true);
 
 save kthClassifier categoryClassifier
 

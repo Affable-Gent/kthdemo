@@ -1,8 +1,4 @@
-function scoring(allFiles, set, imagePath, categoryClassifier)
-
-%TODO: Use the scores from each individual image as opposed to their final
-%labels. Therefore we weight the strong signal frames over the weak
-
+function predictor(allFiles, set, imagePath, categoryClassifier)
 % Testing: sets variables without being passed
 % load kthClassifier.mat categoryClassifier
 % allFiles = allFiles;
@@ -10,9 +6,7 @@ function scoring(allFiles, set, imagePath, categoryClassifier)
 % imagePath = jpgPath;
 % clear classifiedFiles
 
-set = string(set);
-setSize = 0; % Counter
-correctlyClassified = 0; % Counter
+set = string(set); % change type to string
 for i = 1:length(allFiles)
     if strcmp(allFiles(i).set, set)
         setSize = setSize + 1; % Add to the counter
@@ -21,15 +15,22 @@ for i = 1:length(allFiles)
         imgWildcard = strcat(allFiles(i).name,'*.jpg');
         m = fullfile(imagePath,set,allFiles(i).action, imgWildcard);
         n = dir(m);
-        imgLabels =  strings(1,length(m));
+        imgLabels =  strings(1,length(n));
         
-        for j = 1:length(n)
+        sumScores = zeros(1,6);
+        parfor j = 1:length(n)
             path = strcat(n(j).folder,'/',n(j).name);
             img = imread(path);
             [labelIdx, scores] = predict(categoryClassifier, img);
+            % Add the score of each frame to the sumScores
+            sumScores = sumScores + scores;
             tmp = categoryClassifier.Labels(labelIdx);
             imgLabels(j) = tmp;
         end
+        % Average the score per video
+        sumScores = sumScores ./ length(n)
+        index = find(sumScores==max(sumScores))
+        res = actions(index).name
         
         % Get the most common label from all frames
         res = mode(imgLabels)
@@ -48,15 +49,18 @@ for i = 1:length(allFiles)
         end
         classifiedFiles(pos).name = allFiles(i).name;
         classifiedFiles(pos).folder = allFiles(i).folder;
-        classifiedFiles(pos).classified = res;
+        classifiedFiles(pos).classified = char(res);
         classifiedFiles(pos).actual = allFiles(i).action;
         
+        for j=1:length(actions)
+            classifiedFiles(pos).(actions(j).name) = sumScores(1,j);
+        end
         
         % freqTbl = tabulate(res);
         % tabulate(res);
         
     else
-      
+        
     end
     
 end
