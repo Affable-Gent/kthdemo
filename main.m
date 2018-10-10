@@ -31,15 +31,6 @@ pathname = fullfile(pathname,dataset,'/');
 jpgPath = fullfile(pathname,'jpg');
 datasets={'test' 'train'};
 
-%% Script for Mac
-if mac
-    mkdir pathName mov;
-    system(pathToMacScript);
-    fileExt = '.mov';
-    pathSuffix='mov/';
-end
-
-
 %% Get list of actions
 % Get a list of all files and folders in this folder.
 actions = dir(fullfile(pathname,pathSuffix));
@@ -50,6 +41,17 @@ actions = actions(dirFlags);
 % Remove Parent and Current Directories
 actions(ismember( {actions.name}, {'.', '..'})) = [];
 clear dirFlags
+
+%% Script for Mac
+if mac
+    mkdir pathName mov;
+    for i=1:length(actions)
+        strCommandLine = strcat(pathToMacScript, " '",fullfile(pathname,'avi',actions(i).name),"' '",fullfile(pathname,'mov',actions(i).name),"'")
+        system(strCommandLine);
+    end
+    fileExt = '.mov';
+    pathSuffix='mov/';
+end
 
 %% Jpg extraction check
 exists = exist(fullfile(pathname,'jpg'), 'dir');
