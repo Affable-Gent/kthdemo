@@ -9,7 +9,7 @@ function predictor(allFiles, set, imagePath, categoryClassifier, pathname, actio
 set = string(set); % change type to string
 for i = 1:length(allFiles)
     if strcmp(allFiles(i).set, set)
-        disp('Currently classifying: ' + string(allFiles(i).name))
+        disp('* Currently classifying: ' + string(allFiles(i).name))
         
         imgWildcard = strcat(allFiles(i).name,'*.jpg');
         m = fullfile(imagePath,set,allFiles(i).action, imgWildcard);

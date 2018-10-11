@@ -45,6 +45,7 @@ validationSetSize = 0.3; % 0 < x <= 1
 convertGray = 1; % Should the video be converted to greyscale
 resize = [160,160]; % Takes a 1x2 double mat e.g. [160,160] or 0 for false
 skipFrame = 3; % Only read every nth frame, 0 to disable skipping
+shutdownParallel = 0;
 
 %% Set Variables
 % Do not change if you don't know what you're doing
@@ -171,8 +172,10 @@ if ~exists
 end
 
 %% Evaluate dataset
-load(fullfile(pathname,'svmClassifiedFiles.mat'),'classifiedFiles')
+load(fullfile(pathname,'svmClassifiedFiles.mat'),'classifiedFiles');
 evaluator(classifiedFiles, actions)
 
 %% Close parallel computing cluster
-delete(poolObj)
+if shutdownParallel
+    delete(poolObj)
+end
