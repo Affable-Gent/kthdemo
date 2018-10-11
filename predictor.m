@@ -1,4 +1,4 @@
-function predictor(allFiles, set, imagePath, categoryClassifier)
+function predictor(allFiles, set, imagePath, categoryClassifier, pathname)
 % Testing: sets variables without being passed
 % load kthClassifier.mat categoryClassifier
 % allFiles = allFiles;
@@ -64,7 +64,7 @@ for i = 1:length(allFiles)
     end
     
 end
-save kthClassifiedFiles classifiedFiles
+save(fullfile(pathname, 'svmClassifiedFiles.mat'), 'classifiedFiles');
 a = correctlyClassified/setSize;
 disp('The accuracy of the classifier on this set is: ' + string(a));
 
