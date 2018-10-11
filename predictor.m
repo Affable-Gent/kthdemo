@@ -1,4 +1,4 @@
-function predictor(allFiles, set, imagePath, categoryClassifier, pathname)
+function predictor(allFiles, set, imagePath, categoryClassifier, pathname, actions)
 % Testing: sets variables without being passed
 % load kthClassifier.mat categoryClassifier
 % allFiles = allFiles;
@@ -9,7 +9,6 @@ function predictor(allFiles, set, imagePath, categoryClassifier, pathname)
 set = string(set); % change type to string
 for i = 1:length(allFiles)
     if strcmp(allFiles(i).set, set)
-        setSize = setSize + 1; % Add to the counter
         disp('Currently classifying: ' + string(allFiles(i).name))
         
         imgWildcard = strcat(allFiles(i).name,'*.jpg');
@@ -28,12 +27,13 @@ for i = 1:length(allFiles)
             imgLabels(j) = tmp;
         end
         % Average the score per video
-        sumScores = sumScores ./ length(n)
-        index = find(sumScores==max(sumScores))
-        res = actions(index).name
+        sumScores = sumScores ./ length(n);
+        index = find(sumScores==max(sumScores));
+        res = actions(index).name;
+        disp(['Classified as: ' res])
         
         % Get the most common label from all frames
-        res = mode(imgLabels)
+        % res = mode(imgLabels);
         
         % Build a struct that will hold
         if ~exist('classifiedFiles', 'var')
@@ -44,9 +44,6 @@ for i = 1:length(allFiles)
             
         end
         
-        if strcmp(allFiles(i).action, res)
-            correctlyClassified = correctlyClassified + 1;
-        end
         classifiedFiles(pos).name = allFiles(i).name;
         classifiedFiles(pos).folder = allFiles(i).folder;
         classifiedFiles(pos).classified = char(res);
@@ -65,7 +62,4 @@ for i = 1:length(allFiles)
     
 end
 save(fullfile(pathname, 'svmClassifiedFiles.mat'), 'classifiedFiles');
-a = correctlyClassified/setSize;
-disp('The accuracy of the classifier on this set is: ' + string(a));
-
 end

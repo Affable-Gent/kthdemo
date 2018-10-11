@@ -1,43 +1,4 @@
-%% Readme
-% Everyone contributed equally to the code and the project overall.
-
-% Students:
-% 98054998 Morgan Pollock
-%
-%
-%
-% 
-%
-
-% *Workspace Setup and folder
-% The folder structure required for the classifier and dataset is as
-% follows. Ideally the root directory is the C:/ drive as this means no
-% variables need to be changed.
-
-% C:\kth\avi\walking\{walking videos.avi}
-% The structure denoted by the variables is rootpath\datasetName\{avi and jpeg folders}
-%
-% The avi folder must exist and contain folders labelled with each of the
-% actions. For example, the KTH dataset when extracted from the downloaded
-% zip files contains 6 folders each with the action label as the folder
-% name. The code with will pull the folder names to label the videos and
-% hence changing these folder names will change the label.
-%
-% *Video Extraction
-%
-%
-% *Feature Extraction
-% 
-% 
-% *Classifier Creation
-%
-% 
-% *Prediction
-%
-%
-% *Evaluation 
-%
-
+% https://github.com/LizLiu01/kthdemo/tree/morgansChanges
 %% Dataset
 % The KTH dataset is available at:
 % http://www.nada.kth.se/cvap/actions/
@@ -53,13 +14,34 @@ clear
 clc
 
 %% Variables that can be changed
+% Set this value to 1 if running on a mac, the process is the same however it will convert the avi files to mov to allow the videos to be viewable without additional codecs.
 mac = 0;
-dataset='kth'; %Only option currently is KTH
-rootpath = 'C:/'; %This is the folder that contains the dataset folder
-peopleDetectorScore = 0; %Value between 0 and 10; 0 disables peopleDetector
-skipCheck = 0;
-trainSetSize = 0.7; % total of 1
-validationSetSize = 0.3; % total of 1
+
+% Only option currently available is KTH % This will change the folder that the dataset is contained within
+dataset='kth';
+
+% This is the folder that contains the dataset folder
+rootpath = 'C:/';
+
+% Set sensitivity of person detector, setting to 0 will disable
+% It allows for only frames with people to be included however it severely
+% slows down video extraction times.
+% https://au.mathworks.com/help/vision/ref/detectpeopleacf.html
+peopleDetectorScore = 0;
+
+% A quick variable that when set to 1 will not run the overwrite checks in
+% place through the code.
+% We suggest leaving this set to 0
+skipCheck = 0; %
+
+%This is the proportion of the total dataset to be used as the training
+%set, 1 - trainSetSize will give the test set proportion.
+trainSetSize = 0.7; % 0 < x <= 1
+
+%This is the proportion of the training dataset to be used as the
+%validation set, 1 - validationSetSize will give the training set proportion.
+validationSetSize = 0.3; % 0 < x <= 1
+
 convertGray = 1; % Should the video be converted to greyscale
 resize = [160,160]; % Takes a 1x2 double mat e.g. [160,160] or 0 for false
 skipFrame = 3; % Only read every nth frame, 0 to disable skipping
@@ -154,28 +136,29 @@ if ~exists
         extractVideo(jpgPath, allFiles(i).action, allFiles(i).set, allFiles(i).folder, allFiles(i).name, peopleDetectorScore, convertGray, resize, skipFrame);
     end
 else
-    if exist('allFiles.mat', 'file');
+    if exist(fullfile(pathname,'allFiles.mat'), 'file');
         load(fullfile(pathname,'allFiles.mat'),'allFiles')
     end
 end
 
 %% Train Bag of Words
-exists = exist(fullfile(pathname,'kthClassifier.mat'), 'file');
+exists = exist(fullfile(pathname,'svmBoWClassifier.mat'), 'file');
 if exists && ~skipCheck
     prompt = 'It appears that there is already a classifier present. Would you still like to run the BoW classifier? Y/N [N]: ';
     str = input(prompt,'s');
     if str == 'Y'
         exists = 0;
     else
-        load(fullfile(pathname,'svmBoWClassifier.mat'),'kthClassifier')
+        load(fullfile(pathname,'svmBoWClassifier.mat'),'svmClassifier')
     end
 end
 if ~exists
     trainBOW(jpgPath, actions, validationSetSize, datasets(2), pathname);
+    load(fullfile(pathname,'svmBoWClassifier.mat'),'svmClassifier')
 end
 
 %% Classify dataset
-exists = exist(fullfile(origin,'svmClassifiedFiles.mat'), 'file');
+exists = exist(fullfile(pathname,'svmClassifiedFiles.mat'), 'file');
 if exists && ~skipCheck
     prompt = 'It appears that a dataset has already been classified. Would you still like to run the prediction on the test set ? Y/N [N]: ';
     str = input(prompt,'s');
@@ -184,11 +167,11 @@ if exists && ~skipCheck
     end
 end
 if ~exists
-    predictor(allFiles, datasets(1), jpgPath, categoryClassifier, pathname)
+    predictor(allFiles, datasets(1), jpgPath, svmClassifier, pathname, actions)
 end
 
 %% Evaluate dataset
-load(fullfile(pathname,'kthClassifiedFiles'),'classifiedFiles')
+load(fullfile(pathname,'svmClassifiedFiles.mat'),'classifiedFiles')
 evaluator(classifiedFiles, actions)
 
 %% Close parallel computing cluster

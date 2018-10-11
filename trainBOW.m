@@ -65,9 +65,9 @@ end
 
 % This is the training process that creates a classifier from the training
 % set and features
-categoryClassifier = trainImageCategoryClassifier(trainingSet, bag, 'UseParallel', true);
+svmClassifier = trainImageCategoryClassifier(trainingSet, bag, 'UseParallel', true);
 
-save(fullfile(rootPath,'svmBoWClassifier.mat'), 'categoryClassifier')
+save(fullfile(rootPath,'svmBoWClassifier.mat'), 'svmClassifier')
 
 % confMatrix = evaluate(categoryClassifier, trainingSet);
 % % Compute average accuracy
