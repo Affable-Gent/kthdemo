@@ -1,4 +1,4 @@
-# Readme
+# README
 ## 2018 Spring IPPR Image Reconition/Detection
 
 All members of the group contributed equally to the code and the project overall.
