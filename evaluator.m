@@ -13,7 +13,7 @@ for i=1:length(classifiedFiles)
     end
 end
 
-accuracy = correctlyClassified / length(classifiedFiles);
-disp(['The accuracy for the classifier on this dataset is: ', accuracy])
+disp('The accuracy for the classifier on this dataset is: ')
+accuracy = correctlyClassified / length(classifiedFiles)
 
 end
