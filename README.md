@@ -1,6 +1,8 @@
 # README
 ## 2018 Spring IPPR Image Reconition/Detection
 
+https://github.com/LizLiu01/kthdemo/tree/morgansChanges
+
 All members of the group contributed equally to the code and the project overall.
 
 Students:
