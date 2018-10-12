@@ -5,6 +5,7 @@ function trainBOW(path, actions, validationSetSize, set, rootPath)
 % set = 'train'
 % rootPath = pathname
 
+
 set = string(set);
 exists = exist(fullfile(path, set,'bof.mat'), 'file');
 if exists
@@ -67,6 +68,7 @@ end
 % set and features
 svmClassifier = trainImageCategoryClassifier(trainingSet, bag, 'UseParallel', true);
 
+% save the classifer to disk
 save(fullfile(rootPath,'svmBoWClassifier.mat'), 'svmClassifier')
 
 % confMatrix = evaluate(categoryClassifier, trainingSet);
