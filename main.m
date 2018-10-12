@@ -1,3 +1,6 @@
+% The readme is available in this folder written in markdown however it is
+% best viewed on the github page.
+%
 % https://github.com/LizLiu01/kthdemo/tree/morgansChanges
 %% Dataset
 % The KTH dataset is available at:
