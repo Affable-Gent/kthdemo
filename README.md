@@ -47,7 +47,7 @@ The avi folder must exist and contain folders labelled with each of the actions.
   - Our suggestion is to keep the allFiles.mat and the jpg folder as the image extraction takes a long time to run. The classifier and classifiedFiles matlab files can be delete and the process run. Upon completion of the process the deleted files will have been replaced with newer version.
 3. Modify the root path in the main file if the kth folder was not placed on the C: drive
 4. Open and run the main.m file, this can be completed in MATLAB by pressing **F5** when the main file is open . *It is a central file that will call other functions and helper files*
-5. Follow the on-screen instructions if any appear and wait for the dataset to finish processing
+5. Follow the on-screen instructions if any appear and wait for the dataset to finish processing. The feature extraction takes the longest time with k-means clustering taking over 1 hour to compute
 6. The final output should be an overall accuracy score
 
 #### Video Extraction
